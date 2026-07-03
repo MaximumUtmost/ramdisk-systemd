@@ -1,0 +1,21 @@
+[Unit]
+Description=Sync tmpfs ramdisk to disk
+DefaultDependencies=no
+After=local-fs.target
+RequiresMountsFor=/mnt/ramdisk /var
+Before=shutdown.target umount.target
+
+[Service]
+Type=oneshot
+RemainAfterExit=true
+TimeoutStartSec=60
+TimeoutStopSec=240
+
+# === Boot: Restore (without --delete to be safer) ===
+ExecStart=/usr/local/bin/tmpfs-backup.sh start
+
+# === Shutdown: Backup ===
+ExecStop=/usr/local/bin/tmpfs-backup.sh stop
+
+[Install]
+WantedBy=basic.target
